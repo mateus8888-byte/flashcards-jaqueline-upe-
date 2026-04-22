@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulado — Metodología UNIDA</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Nunito',sans-serif;background:#f0f4ff;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:24px 14px 60px;background-image:radial-gradient(circle at 15% 10%,#dbeafe 0%,transparent 45%),radial-gradient(circle at 85% 90%,#ede9fe 0%,transparent 45%)}
+header{width:100%;max-width:700px;display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.logo{font-size:14px;font-weight:900;color:#4f46e5}
+.badge{background:#4f46e5;color:white;font-size:12px;font-weight:800;padding:5px 14px;border-radius:99px}
+.progress-wrap{width:100%;max-width:700px;margin-bottom:18px}
+.progress-row{display:flex;justify-content:space-between;font-size:12px;font-weight:700;color:#6b7280;margin-bottom:6px}
+.bar-bg{width:100%;height:8px;background:#e0e7ff;border-radius:99px;overflow:hidden}
+.bar-fill{height:100%;background:linear-gradient(90deg,#4f46e5,#7c3aed);border-radius:99px;transition:width 0.5s ease}
+.card{width:100%;max-width:700px;background:white;border-radius:20px;box-shadow:0 6px 32px rgba(79,70,229,.11),0 2px 6px rgba(0,0,0,.05);overflow:hidden;margin-bottom:14px}
+.card-top{padding:24px 24px 16px;border-left:6px solid #4f46e5}
+.q-label{font-size:10px;font-weight:800;letter-spacing:2px;color:#4f46e5;text-transform:uppercase;margin-bottom:10px}
+.q-pts{font-size:11px;font-weight:700;color:#a5b4fc;margin-left:8px}
+.q-text{font-size:15px;font-weight:700;color:#1e1b4b;line-height:1.65;white-space:pre-line}
+.options{padding:4px 24px 20px;display:flex;flex-direction:column;gap:8px}
+.opt{padding:11px 15px;border-radius:10px;border:2px solid #e0e7ff;background:#f8f9ff;font-size:14px;font-weight:600;color:#374151;cursor:pointer;transition:all .15s;text-align:left;line-height:1.5;font-family:'Nunito',sans-serif}
+.opt:hover:not(.locked){border-color:#4f46e5;background:#eef2ff;color:#3730a3}
+.opt.correct{border-color:#059669;background:#ecfdf5;color:#065f46;font-weight:800}
+.opt.wrong{border-color:#dc2626;background:#fef2f2;color:#991b1b}
+.opt.locked{cursor:default}
+.feedback{margin:0 24px 20px;border-radius:12px;padding:14px 16px;display:none;animation:fadeIn .3s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+.feedback.show{display:block}
+.feedback.ok{background:#ecfdf5;border:1.5px solid #6ee7b7}
+.feedback.fail{background:#fef2f2;border:1.5px solid #fca5a5}
+.fb-top{font-size:13px;font-weight:800;margin-bottom:6px}
+.fb-top.ok{color:#059669}
+.fb-top.fail{color:#dc2626}
+.fb-just{font-size:13px;font-weight:600;color:#374151;line-height:1.6}
+.actions{width:100%;max-width:700px;display:flex;gap:10px}
+.btn{flex:1;padding:13px 18px;border:none;border-radius:12px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;cursor:pointer;transition:transform .15s;display:flex;align-items:center;justify-content:center;gap:5px}
+.btn:hover{transform:translateY(-2px)}
+.btn:active{transform:translateY(0)}
+.btn-prev{background:white;color:#6b7280;box-shadow:0 2px 10px rgba(0,0,0,.08);flex:0 0 auto;padding:13px 20px}
+.btn-next{background:linear-gradient(135deg,#4f46e5,#7c3aed);color:white;box-shadow:0 4px 18px rgba(79,70,229,.32)}
+.done{width:100%;max-width:700px;background:white;border-radius:20px;padding:50px 32px;text-align:center;box-shadow:0 6px 32px rgba(79,70,229,.11);display:none}
+.done.show{display:block;animation:fadeIn .4s ease}
+.done-emoji{font-size:60px;margin-bottom:14px}
+.score-big{font-size:52px;font-weight:900;color:#4f46e5;margin-bottom:4px}
+.done h2{font-size:22px;font-weight:900;color:#1e1b4b;margin-bottom:8px}
+.done p{color:#6b7280;font-size:14px;margin-bottom:28px}
+.btn-restart{background:linear-gradient(135deg,#4f46e5,#7c3aed);color:white;box-shadow:0 4px 18px rgba(79,70,229,.32);padding:13px 36px;border:none;border-radius:12px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;cursor:pointer;transition:transform .15s}
+.btn-restart:hover{transform:translateY(-2px)}
+.open-answer{margin:4px 24px 20px;padding:16px;background:#f5f3ff;border-radius:12px;border:2px dashed #a5b4fc;display:none}
+.open-label{font-size:10px;font-weight:800;letter-spacing:2px;color:#7c3aed;text-transform:uppercase;margin-bottom:8px}
+.open-text{font-size:15px;font-weight:800;color:#1e1b4b;line-height:1.6;white-space:pre-line}
+.btn-reveal{margin:4px 24px 20px;padding:11px 18px;border-radius:10px;border:2px solid #a5b4fc;background:#eef2ff;font-size:13px;font-weight:800;color:#4f46e5;cursor:pointer;transition:all .15s;width:calc(100% - 48px);font-family:'Nunito',sans-serif;display:block}
+.btn-reveal:hover{background:#e0e7ff}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">📚 Metodología — UNIDA</div>
+  <div class="badge" id="badgeCount">1 / 58</div>
+</header>
+<div class="progress-wrap">
+  <div class="progress-row"><span>Progresso</span><span id="pct">0%</span></div>
+  <div class="bar-bg"><div class="bar-fill" id="barFill" style="width:0%"></div></div>
+</div>
+<div id="cardWrap">
+  <div class="card">
+    <div class="card-top">
+      <div class="q-label" id="qLabel">Questão 1</div>
+      <div class="q-text" id="qText"></div>
+    </div>
+    <div id="mainContent"></div>
+    <div class="feedback" id="feedback">
+      <div class="fb-top" id="fbTop"></div>
+      <div class="fb-just" id="fbJust"></div>
+    </div>
+  </div>
+</div>
+<div class="actions" id="actions">
+  <button class="btn btn-prev" onclick="prevQ()">← Voltar</button>
+  <button class="btn btn-next" onclick="nextQ()">Próxima →</button>
+</div>
+<div class="done" id="done">
+  <div class="done-emoji">🎉</div>
+  <div class="score-big" id="scoreBig"></div>
+  <h2>Simulado completo!</h2>
+  <p id="doneMsg"></p>
+  <button class="btn-restart" onclick="restart()">↺ Reiniciar</button>
+</div>
+<script>
+const QS=[
+{type:"mc",q:"La INTRODUCCIÓN de la monografía:",pts:"2p",opts:["Son la síntesis, en la cual se incluyen todas las implicaciones que se derivan de la investigación, los aspectos a contemplar a futuro, las necesidades de estudio en el área, entre otras cosas","Contempla las referencias de documentos impresos, bibliohemerográficos, electrónicos y audiovisuales que hayan sido utilizados para el desarrollo de la monografía","Son las unidades o partes en las que se desarrolla la monografía se presentan en esta parte","A y C son correctas","Ninguna es correcta"],answer:4,just:"A = Conclusión. B = Referencias. C = Capítulos. La Introducción contextualiza tema, propósito, justificativa y estructura — ninguna alternativa dice eso. Respuesta: E."},
+{type:"mc",q:"Contempla la contextualización temática del trabajo, haciendo énfasis el entorno en el cual se inscribe la temática del trabajo; el propósito del trabajo; la justificación e importancia de la investigación y; la estructuración de la monografía.",pts:"2p",opts:["Articulo científico","Introducción","Conclusión","Referencia bibliográfica","Resumen (Abstract)"],answer:1,just:"Contextualización + propósito + justificativa + estructura = Introducción. Respuesta: B."},
+{type:"mc",q:"Incluye todos aquellos documentos complementarios utilizados en el trabajo, cuya autoría pertenece a otros.",pts:"2p",opts:["Anexos","Referencias Bibliográficas","Apéndice","A, B y C son correctas","Resumen"],answer:0,just:"Anexos = documentos de autoría de TERCEROS. Apéndice = documentos del propio autor. Esa diferencia es clave. Respuesta: A."},
+{type:"mc",q:"Es un conjunto de servicios que ofrece la universidad a los miembros de su comunidad para la dirección y distribución de materiales digitales creados por la institución y los miembros de esa comunidad.",pts:"2p",opts:["Repositorio institucional","Biblioteca digital","A y B son correctas","Revista Científica","Ninguna es correcta"],answer:0,just:"Repositorio institucional = servicio de la universidad para gestionar materiales producidos por ella. Biblioteca digital = colección organizada, concepto más amplio. Respuesta: A."},
+{type:"mc",q:"Son colecciones organizadas de información digital. Combinan la estructura y concurrencia de la información, que siempre han tenido las bibliotecas y los archivos, con la representación digital que han hecho posible las computadoras.",pts:"2p",opts:["Repositorio institucional","Biblioteca digital","A y B son correctas","Revista Científica","Ninguna es correcta"],answer:1,just:"Colecciones organizadas + estructura tradicional de biblioteca + representación digital = Biblioteca digital. El repositorio usa metadatos y es de una institución. Respuesta: B."},
+{type:"mc",q:"Se da al presentar como propia la idea original de otra persona.",pts:"2p",opts:["Referencia falsa","Referencia perdida","Copiar y pegar","Plagio","Ninguna es correcta"],answer:3,just:"Plagio = presentar como propia la idea de otro. Puede ocurrir aunque no se copie textualmente. Respuesta: D."},
+{type:"mc",q:"Al no citar o referenciar información proveniente de otra fuente se comete plagio, a menos que dicha información sea de conocimiento general por cual no requiere una referencia.",pts:"2p",opts:["Referencia perdida","Referencia falsas","Fabricación de datos","Plagio","Auto-plagio"],answer:3,just:"No citar la fuente = plagio. Excepción: conocimiento general ampliamente conocido. Respuesta: D."},
+{type:"mc",q:"Ocurre cuando simplemente se intercambian palabras de una oración o un párrafo, o cuando se sigue el mismo estilo dado en la fuente original.",pts:"2p",opts:["Parafraseo inapropiado","Referencia falsas","Fabricación de datos","Plagio","Auto-plagio"],answer:0,just:"Paráfrasis inapropiada = cambiar palabras sin reconstruir con comprensión propia. Sigue siendo plagio porque la estructura y las ideas son del autor original. Respuesta: A."},
+{type:"mc",q:"Este es uno de los actos más severos de plagio y se da al copiar sin autorización material perteneciente a otra persona.",pts:"2p",opts:["Parafraseo inapropiado","Referencia falsas","Fabricación de datos","Plagio","Ninguna es correcta"],answer:3,just:"Copiar sin autorización material ajeno = forma más grave y directa de plagio. Respuesta: D."},
+{type:"mc",q:"Identifique conceptos centrales del texto, Busque términos similares sin generar cambios en el sentido, Compare con el texto base y reescriba. Son estrategias para elaborar un:",pts:"2p",opts:["Subrayado","Resumen","Parafraseo/Paráfrasis","A, B y C son correctas","Ninguna es correcta"],answer:2,just:"Identificar conceptos → sinónimos → comparar y reescribir. Esos 3 pasos = estrategias de la Paráfrasis. Respuesta: C."},
+{type:"mc",q:"Regularmente tiene como eje central, la morfología, esto es, hablar frente a un público, tiene como objetivo trasmitir un mensaje sobre un tema o contenido disciplinar, lo cual constituye una forma de concreción y vigencia de los modelos comunicacionales.",pts:"1p",opts:["Resumen","Monografía","Exposición","Articulo científico","Parafraseo"],answer:2,just:"Exposición = presentación oral frente a público para transmitir mensaje disciplinar. No es escribir — es hablar. Respuesta: C."},
+{type:"mc",q:"Las funciones sociales que tienen que ver con la certificación del saber, Función de control y Funciones pedagógicas. Son funciones de la:",pts:"1p",opts:["Paráfrasis","Evaluación de aprendizajes","Plagio","Citas","Subrayado"],answer:1,just:"Las 3 funciones clásicas de la Evaluación: Certificación (valida el saber), Control (verifica cumplimiento), Pedagógica (orienta el aprendizaje). Respuesta: B."},
+{type:"mc",q:"Mantilla-Villarreal et al. (2010) sostienen que esta parte es una versión compacta y condensada del artículo.",pts:"1p",opts:["Introducción","Articulo científico","Cita textuales","Resumen (Abstract)","Ninguna es correcta"],answer:3,just:"El Abstract = versión compacta y condensada del artículo. Es el primer contacto del lector — decide si leerá el artículo completo. Respuesta: D."},
+{type:"mc",q:"Identificar la idea principal, realizando una lectura general y después una detenida. Considerar que la idea principal puede estar al inicio del párrafo, en el centro o al final del párrafo. La idea secundaria complementa a la principal.",pts:"1p",opts:["Introducción","Resumen","Conclusión","Parafraseo","Ninguna es correcta"],answer:1,just:"Pautas para elaborar un Resumen: lectura general + detenida, identificar idea principal en cualquier posición del párrafo. Respuesta: B."},
+{type:"mc",q:"Realizar una lectura completa del texto. Segunda lectura en la que se subrayan las ideas centrales, que permita analizar el texto. Ordena las ideas más sencillas hasta llegar a la más compleja, suponiendo un orden incluso allí donde no hubiera. Interpreta el texto, integrando sus partes.",pts:"1p",opts:["Citas","Subrayado","Conclusión","Parafraseo","Resumen"],answer:4,just:"Lectura completa → subrayar → ordenar de simple a complejo → interpretar integrando. Esos 4 pasos secuenciales = técnica del Resumen. Respuesta: E."},
+{type:"mc",q:"Es un género discursivo de la tipología textual argumentativa, cuya escritura se visualiza en prosa. En él, el autor cumple el objetivo fundamental de defender una tesis para lograr la adhesión del auditorio a la misma.",pts:"1p",opts:["Articulo científico","Parafraseo","Resumen (Abstract)","Resumen","Ensayo"],answer:4,just:"Ensayo = género argumentativo en prosa donde el autor defiende una tesis. Diferente del artículo científico que sigue estructura IMRD. Respuesta: E."},
+{type:"mc",q:"Son consideradas………., dónde reproduces exactamente las palabras del autor.",pts:"1p",opts:["Citas parafraseadas","Citas parentéticas","Resumen","Citas parafraseadas y parentéticas","Citas textuales"],answer:4,just:"Citas textuales = reproducen EXACTAMENTE las palabras del autor. Las parafraseadas usan tus propias palabras. Respuesta: E."},
+{type:"mc",q:"Son consideradas………..cuando cuentas, en tus propias palabras, las ideas de otro autor.",pts:"1p",opts:["Citas parafraseadas","Citas parentéticas","Paráfrasis","Citas parafraseadas y parentéticas","Ninguna es correcta"],answer:0,just:"Citas parafraseadas = contar con tus propias palabras las ideas de otro. El crédito permanece — cambias la forma, no la autoría. Respuesta: A."},
+{type:"mc",q:"Existen dos formatos básicos para presentar las citas en el texto:",pts:"1p",opts:["Citas parafraseadas","Cita narrativa (basada en el autor)","Cita en paréntesis/parentética (basada en el texto)","Citas parafraseadas y parentéticas","B y C son correctas"],answer:4,just:"Los 2 FORMATOS de presentación: Narrativa (autor al inicio: 'García (2020) afirma...') y Parentética (autor al final: '...(García, 2020)'). Esta pregunta es sobre FORMATO. Respuesta: E."},
+{type:"mc",q:"El estilo APA separa las citas en dos grandes clases:",pts:"1p",opts:["Citas parafraseadas","Cita narrativa (basada en el autor)","Cita en paréntesis/parentética (basada en el texto)","Citas parafraseadas y parentéticas","Ninguna es correcta"],answer:3,just:"APA divide las citas en 2 CLASES por contenido: Parafraseadas (tus palabras) y Textuales (palabras exactas del autor). Q19 era sobre FORMATO. Q20 es sobre CLASE. Categorías diferentes. Respuesta: D."},
+{type:"open",q:"Es la principal forma de comunicación de la ciencia; no es la única, pero es la mayormente valorada; experimenta un proceso de revisión por pares, quienes al aprobar el trabajo constatan su buena calidad y verifican que atienda los elementos necesarios para fortalecer el conocimiento científico en la temática en cuestión.",answer:"✅ Revista Científica",just:"La revisión por pares (peer review) es el diferencial — especialistas validan antes de publicar. Garantiza calidad y credibilidad científica."},
+{type:"open",q:"Esta sección debe convencer al lector de la importancia del artículo y atraerlo a su lectura completa, pero también se debe considerar que los organismos que elaboran bancos de información científica utilizan un apartado para hacer la clasificación del artículo.",answer:"✅ Resumen (Abstract)",just:"El Abstract tiene doble función: convencer al lector de leer Y ser usado por los bancos de datos para clasificar/indexar el artículo. Por eso debe ser preciso e informativo."},
+{type:"open",q:"Booth (2006) recomienda empezar la escritura del artículo con esta sección, porque presume que es la más fácil de escribir, puesto que se tiene claro lo que se hizo, cómo se hizo y los resultados encontrados.",answer:"✅ Métodos",just:"Booth recomienda empezar por Métodos — al terminar la investigación ya sabes exactamente qué hiciste y cómo. Es la sección más objetiva. Documenta el proceso, no interpreta."},
+{type:"open",q:"Debe atraer a los lectores, en particular a la audiencia científica, para que busquen el artículo. Se deben evitar palabras ambiguas, abreviaturas y expresiones tales como: 'algunos aspectos de', 'algunos elementos de', entre otras.",answer:"✅ Título",just:"El Título debe ser preciso y atractivo. Evitar términos vagos perjudica la indexación en bases de datos y aleja lectores científicos que buscan términos específicos."},
+{type:"open",q:"Identificar la idea principal, realizando una lectura general y después una detenida, considerar que la idea principal puede estar al inicio del párrafo, en el centro o al final de párrafo y la idea secundaria complementa a la principal. Son pautas a seguir para el:",answer:"✅ Subrayado",just:"Aquí el contexto es Subrayado (Q25). Nota: Q14 tiene enunciado parecido pero la respuesta es Resumen — lee el contexto con atención para no confundirlas."},
+{type:"open",q:"Esta técnica tiene por objeto resaltar, mediante trazos diferentes o colores, las palabras del texto que contienen o representan las ideas o conceptos fundamentales y los enlaces (y, ni, pero…) que pueden favorecer la comprensión o estructura del texto escrito.",answer:"✅ Subrayado",just:"Subrayar = resaltar con trazos o colores palabras clave y conectivos. Es la técnica más básica e inicial del estudio — prepara para el resumen y la paráfrasis."},
+{type:"open",q:"Consiste en la reducción de un texto respetando su sentido y empleando las palabras del autor. Como su objetivo es reducir el texto a la información fundamental, con respeto fiel a las palabras del autor, esta técnica es considerada como una de las más sencillas y, por tanto, la más apropiada en las primeras etapas del estudio.",answer:"✅ Resumen",just:"Resumen = reducir el texto usando las PALABRAS DEL AUTOR. Más simple que la paráfrasis porque no exige reconstrucción — seleccionas y condensas lo que el autor ya dijo."},
+{type:"open",q:"Incluir todo lo importante. Prescindir de explicaciones secundarias y de ejemplos. Redacta prescindiendo de la forma textual, acudiendo a una redacción personal. Respetar las ideas del autor. Son condiciones importantes para un:",answer:"✅ Resumen",just:"Las 4 condiciones del buen Resumen: incluir lo esencial, eliminar lo secundario, redactar de forma personal, respetar las ideas del autor. Memoriza las cuatro."},
+{type:"open",q:"Es el ejercicio de reconstruir un texto a partir de la comprensión que tenemos de él.",answer:"✅ Paráfrasis",just:"Paráfrasis = RECONSTRUIR el texto a partir de tu comprensión. Más profundo que el resumen — exige entender para luego reescribir completamente con tus palabras."},
+{type:"open",q:"Estrategias para elaborar una paráfrasis:\n1) Identifique conceptos centrales del texto\n2) Busque términos similares sin generar cambios en el sentido\n3) Compare el parafraseo con texto base y reescribe",answer:"✅ Paráfrasis\nEstrategias: Identificar → Sinónimos → Comparar y reescribir",just:"Las 3 estrategias de la paráfrasis en orden. Memoriza la secuencia: identificar conceptos → buscar sinónimos → comparar con el original y reescribir."},
+{type:"open",q:"La paráfrasis aporta múltiples beneficios al ejercicio académico:\n• Permite sintetizar información extensa con enunciados sencillos\n• Amplía el vocabulario de quien realiza la paráfrasis\n• Permite al lector confrontar su comprensión del texto a partir de la comparación del texto base con su paráfrasis",answer:"✅ Paráfrasis\nBeneficios: Sintetizar / Ampliar vocabulario / Confrontar comprensión",just:"Los 3 beneficios de la paráfrasis. Ampliar vocabulario es exclusivo de la paráfrasis — el resumen no lo hace porque usas las palabras del autor, no buscas sinónimos."},
+{type:"open",q:"¿Qué tipos de citas existen en el formato APA?",answer:"✅ Citas parafraseadas y Citas textuales",just:"APA clasifica las citas en 2 tipos por contenido: Textuales (palabras exactas del autor) y Parafraseadas (tus palabras, idea del autor). Las narrativas y parentéticas son FORMATOS — clasificación distinta."},
+{type:"open",q:"Este tipo de cita es conocida como _____ porque al comienzo de la frase vamos agregar el nombre del autor.",answer:"✅ Cita narrativa",just:"Cita narrativa: autor al INICIO. Ej: 'García (2020) afirma que...' — Cita parentética: autor al FINAL entre paréntesis. Ej: '...(García, 2020)'"},
+{type:"open",q:"En esta parte se incluyen los datos del autor y de la institución a la cual pertenece, el título del trabajo y la fecha de presentación.\n[Sin alternativas]",answer:"✅ Portada",just:"Portada (tapa) = datos del autor + institución + título + fecha. Es la primera página. No confundir con Introducción que viene después y contextualiza el contenido."},
+{type:"open",q:"Contempla la contextualización temática del trabajo, haciendo énfasis el entorno en el cual se inscribe la temática del trabajo; el propósito del trabajo; la justificación e importancia de la investigación y; la estructuración de la monografía.\n[Sin alternativas]",answer:"✅ Introducción",just:"Introducción = contextualizar + propósito + justificativa + estructura. Orienta al lector sobre qué va a encontrar en el trabajo."},
+{type:"open",q:"Son la síntesis, en la cual se incluyen todas las implicaciones que se derivan de la investigación, los aspectos a contemplar a futuro, las necesidades de estudio en el área, entre otras cosas.\n[Sin alternativas]",answer:"✅ Conclusión",just:"Conclusión = síntesis de implicaciones + perspectivas futuras + necesidades de estudio. Es el cierre de la investigación — diferente del Abstract que es un resumen anticipado."},
+{type:"open",q:"Es un procedimiento científico, un proceso sistemático de indagación, recolección, organización, análisis e interpretación de información o datos en torno a un determinado tema. Al igual que otros tipos de investigación, éste es conducente a la construcción de conocimientos.\n[Sin alternativas]",answer:"✅ Investigación documental",just:"Investigación documental = proceso sistemático basado en documentos, no en experimentos o campo. Es un tipo legítimo de investigación científica."},
+{type:"open",q:"Son colecciones organizadas de información digital. Combinan la estructura y concurrencia de la información, que siempre han tenido las bibliotecas y los archivos, con la representación digital que han hecho posible las computadoras.\n[Sin alternativas]",answer:"✅ Bibliotecas digitales",just:"Bibliotecas digitales = colecciones organizadas + estructura tradicional de biblioteca + representación digital. El repositorio digital usa metadatos y es interoperable — concepto diferente."},
+{type:"open",q:"Son estructuras web interoperables que alojan recursos científicos, académicos y administrativos, tanto físicos como digitales, descritos por medio de un conjunto de datos específicos (metadatos).\n[Sin alternativas]",answer:"✅ Repositorios digitales",just:"Repositorios digitales = estructuras web + interoperables + metadatos. Palabra clave: interoperable — sistemas distintos pueden intercambiar información entre sí."},
+{type:"open",q:"Ocurre cuando se toman ideas o palabras escritas por otros sin reconocer de forma directa el haberlo hecho.\n[Sin alternativas]",answer:"✅ Plagio",just:"Plagio = usar ideas o palabras de otros sin reconocer la autoría. La intención de ocultar la fuente es el elemento central."},
+{type:"open",q:"Se da cuando un autor copia nuevamente un trabajo que ya había realizado anteriormente o usa las mismas ideas expuestas en ese trabajo, pero con distintas palabras para hacerlo parecer diferente.",answer:"✅ Auto-plagio",just:"Auto-plagio = reutilizar trabajo propio anterior como si fuera nuevo. Es deshonestidad académica aunque sea tuyo — engañas sobre la originalidad."},
+{type:"open",q:"Este ocurre cuando se manipulan los datos de una investigación para tratar de ocultar el plagio.",answer:"✅ Fabricación de datos",just:"Fabricación de datos = manipular datos para ocultar plagio. Una de las formas más graves de deshonestidad académica — destruye la integridad de la investigación."},
+{type:"open",q:"Principales razones que llevan a los estudiantes a cometer plagio.",answer:"✅ 1) El estudiante considera que la asignación es una pérdida de tiempo\n2) El estudiante no cuenta con suficiente tiempo para realizar el trabajo\n3) Por presión de grupo ya que sus compañeros también lo hacen",just:"Aquí aparecen 3 razones. En Q55 (con alternativas) aparece una 4ª: no poseen destrezas de investigación — y la respuesta cambia a 'Todas son correctas'. Atención al número de opciones en la prova."},
+{type:"open",q:"Esta se da al poner una referencia en un párrafo u oración que no corresponde a la fuente original donde se obtuvo dicha información.\n[Sin alternativas]",answer:"✅ Referencia falsa",just:"Referencia falsa = citar una fuente que no es el origen real de la información. La fuente existe pero es incorrecta — diferente de fabricar datos."},
+{type:"open",q:"El objetivo de la evaluación del aprendizaje, como actividad genérica, es:\n[Sin alternativas]",answer:"✅ Valorar el aprendizaje en su proceso y resultados",just:"El objetivo es valorar el aprendizaje en el PROCESO y los resultados — no solo sancionar o certificar al final. La evaluación acompaña todo el camino."},
+{type:"open",q:"Dentro de las funciones pretendidas o no, de la evaluación están:\n[Sin alternativas]",answer:"✅ Certificación, Control, Pedagógica y Controlar",just:"Las 4 funciones: Certificación (valida el saber), Control (verifica cumplimiento), Pedagógica (orienta el aprendizaje), Controlar (regulación social). Memoriza las cuatro."},
+{type:"mc",q:"En esta parte se incluyen los datos del autor y de la institución a la cual pertenece, el título del trabajo y la fecha de presentación.",pts:"",opts:["Introducción","Monografía","Conclusión","Plagio","Ninguna es correcta"],answer:4,just:"La respuesta correcta es Portada — pero NO está en las alternativas de esta pregunta. Por eso la respuesta es E) Ninguna es correcta. Cuando la respuesta no aparece, marca Ninguna."},
+{type:"mc",q:"Contempla la contextualización temática del trabajo, haciendo énfasis el entorno en el cual se inscribe la temática del trabajo; el propósito del trabajo; la justificación e importancia de la investigación y; la estructuración de la monografía.",pts:"",opts:["Introducción","Monografía","Conclusión","Plagio","Ninguna es correcta"],answer:0,just:"Aquí Introducción SÍ aparece en las alternativas — diferente de Q47. Contextualización + propósito + justificativa + estructura = Introducción. Respuesta: A."},
+{type:"mc",q:"Son las síntesis, en la cual se incluyen todas las implicaciones que se derivan de la investigación, los aspectos a contemplar a futuro, las necesidades de estudio en el área, entre otras cosas.",pts:"",opts:["Introducción","Monografía","Conclusión","Plagio","Ninguna es correcta"],answer:2,just:"Síntesis de implicaciones + perspectivas futuras + necesidades de estudio = Conclusión. Respuesta: C."},
+{type:"mc",q:"Es un procedimiento científico, un proceso sistemático de indagación, recolección, organización, análisis e interpretación de información o datos en torno a un determinado tema. Al igual que otros tipos de investigación, éste es conducente a la construcción de conocimientos.",pts:"",opts:["Referencias","Evaluación","Investigación documental","Plagio","Ninguna es correcta"],answer:2,just:"Proceso sistemático de indagación + análisis de información + construcción de conocimiento = Investigación documental. Respuesta: C."},
+{type:"mc",q:"Son colecciones organizadas de información digital. Combinan la estructura y concurrencia de la información, que siempre han tenido las bibliotecas y los archivos, con la representación digital que han hecho posible las computadoras.",pts:"",opts:["Bibliotecas digitales","Repositorios digitales","Investigación documental","Monografía","Todas son correctas"],answer:0,just:"Colecciones organizadas + estructura tradicional + representación digital = Bibliotecas digitales. No confundir con repositorios — que son estructuras web con metadatos. Respuesta: A."},
+{type:"mc",q:"Son estructuras web interoperables que alojan recursos científicos, académicos y administrativos, tanto físicos como digitales, descritos por medio de un conjunto de datos específicos (metadatos).",pts:"",opts:["Bibliotecas digitales","Repositorios digitales","Investigación documental","Monografía","Ninguna es correcta"],answer:1,just:"Estructuras web interoperables + metadatos = Repositorios digitales. Palabra clave que separa del concepto de biblioteca digital: interoperable + metadatos. Respuesta: B."},
+{type:"mc",q:"Ocurre cuando se toman ideas o palabras escritas por otros sin reconocer de forma directa el haberlo hecho.",pts:"",opts:["Plagio","Falsa autoría","Envío doble","Monografía","Ninguna es correcta"],answer:0,just:"Plagio = usar ideas o palabras de otros sin reconocer. Falsa autoría = poner nombre de quien no contribuyó. Envío doble = someter el mismo trabajo a dos publicaciones. Respuesta: A."},
+{type:"mc",q:"Este ocurre cuando se manipulan los datos de una investigación para tratar de ocultar el plagio.",pts:"",opts:["Falsa autoría","Envío doble","Auto-plagio","Fabricación de datos","Todas son correctas"],answer:3,just:"Fabricación de datos = manipular datos para ocultar plagio. No confundir con auto-plagio — que es reutilizar trabajo propio. Respuesta: D."},
+{type:"mc",q:"Principales razones que llevan a los estudiantes a cometer plagio:\na) el estudiante considera que la asignación es una pérdida de tiempo\nb) el estudiante no cuenta con suficiente tiempo para realizar el trabajo\nc) por presión de grupo ya que sus compañeros también lo hacen\nd) no poseen destrezas de investigación",pts:"",opts:["El estudiante considera que la asignación es una pérdida de tiempo","El estudiante no cuenta con suficiente tiempo para realizar el trabajo","Por presión de grupo ya que sus compañeros también lo hacen","No poseen destrezas de investigación","Todas es correcta"],answer:4,just:"Las 4 razones son válidas. En Q43 (abierta) aparecían solo 3 — aquí aparece la 4ª (destrezas) y la respuesta es E) Todas es correcta."},
+{type:"mc",q:"Esta se da al poner una referencia en un párrafo u oración que no corresponde a la fuente original donde se obtuvo dicha información.",pts:"",opts:["Falsa autoría","Envío doble","Auto-plagio","Fabricación de datos","Referencia falsa"],answer:4,just:"Referencia falsa = citar fuente incorrecta. Diferente de fabricación de datos — aquí la referencia existe pero no es la correcta. La fuente está equivocada, no inventada. Respuesta: E."},
+{type:"open",q:"El objetivo de la evaluación del aprendizaje, como actividad genérica, es: (Q57)",answer:"✅ Valorar el aprendizaje en su proceso y resultados",just:"Mismo que Q45 — refuerzo. El objetivo es valorar proceso Y resultados. No solo el resultado final."},
+{type:"open",q:"Y su función es: (Q58)",answer:"✅ Certificación, control, pedagógica y controlar",just:"Mismo que Q46 — refuerzo. Las 4 funciones: Certificación, Control, Pedagógica, Controlar. La prova repite para fijar — debes saberlo de memoria."}
+];
+
+let current=0,score=0,answered=false;
+const total=QS.length;
+
+function render(){
+  const q=QS[current];
+  const pct=Math.round((current/total)*100);
+  document.getElementById('qLabel').innerHTML='📝 Questão '+(current+1)+' de '+total+(q.pts?'<span class="q-pts">('+q.pts+')</span>':'');
+  document.getElementById('qText').textContent=q.q;
+  document.getElementById('badgeCount').textContent=(current+1)+' / '+total;
+  document.getElementById('pct').textContent=pct+'%';
+  document.getElementById('barFill').style.width=pct+'%';
+  document.getElementById('feedback').className='feedback';
+  document.getElementById('fbTop').textContent='';
+  document.getElementById('fbJust').textContent='';
+  const main=document.getElementById('mainContent');
+  main.innerHTML='';
+  answered=false;
+  if(q.type==='mc'){
+    const div=document.createElement('div');
+    div.className='options';
+    const L=['A','B','C','D','E'];
+    q.opts.forEach((o,i)=>{
+      const btn=document.createElement('button');
+      btn.className='opt';
+      btn.textContent=L[i]+') '+o;
+      btn.onclick=()=>selectMC(i);
+      div.appendChild(btn);
+    });
+    main.appendChild(div);
+  } else {
+    const btn=document.createElement('button');
+    btn.className='btn-reveal';
+    btn.id='revealBtn';
+    btn.textContent='👁 Ver resposta correta';
+    btn.onclick=revealOpen;
+    main.appendChild(btn);
+    const ans=document.createElement('div');
+    ans.className='open-answer';
+    ans.id='openAnswer';
+    ans.innerHTML='<div class="open-label">✅ Resposta correta</div><div class="open-text">'+q.answer.replace(/\n/g,'<br>')+'</div>';
+    main.appendChild(ans);
+  }
+  document.getElementById('done').classList.remove('show');
+  document.getElementById('cardWrap').style.display='block';
+  document.getElementById('actions').style.display='flex';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function selectMC(selected){
+  if(answered)return;
+  answered=true;
+  const q=QS[current];
+  const btns=document.querySelectorAll('.opt');
+  const L=['A','B','C','D','E'];
+  btns.forEach((btn,i)=>{
+    btn.classList.add('locked');
+    if(i===q.answer)btn.classList.add('correct');
+    else if(i===selected)btn.classList.add('wrong');
+  });
+  const fb=document.getElementById('feedback');
+  const fbTop=document.getElementById('fbTop');
+  const fbJust=document.getElementById('fbJust');
+  if(selected===q.answer){
+    score++;
+    fb.className='feedback ok show';
+    fbTop.className='fb-top ok';
+    fbTop.textContent='✅ Correto!';
+  } else {
+    fb.className='feedback fail show';
+    fbTop.className='fb-top fail';
+    fbTop.textContent='❌ Errado. Correto: '+L[q.answer]+') '+q.opts[q.answer];
+  }
+  fbJust.textContent='💡 '+q.just;
+  fb.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function revealOpen(){
+  document.getElementById('revealBtn').style.display='none';
+  document.getElementById('openAnswer').style.display='block';
+  const fb=document.getElementById('feedback');
+  fb.className='feedback ok show';
+  document.getElementById('fbTop').className='fb-top ok';
+  document.getElementById('fbTop').textContent='💡 Justificativa';
+  document.getElementById('fbJust').textContent=QS[current].just;
+  fb.scrollIntoView({behavior:'smooth',block:'nearest'});
+  answered=true;
+}
+
+function nextQ(){
+  if(current<total-1){current++;render();}
+  else showDone();
+}
+
+function prevQ(){
+  if(current>0){current--;render();}
+}
+
+function showDone(){
+  document.getElementById('cardWrap').style.display='none';
+  document.getElementById('actions').style.display='none';
+  document.getElementById('barFill').style.width='100%';
+  document.getElementById('pct').textContent='100%';
+  document.getElementById('badgeCount').textContent=total+' / '+total;
+  document.getElementById('scoreBig').textContent=score+'/20';
+  document.getElementById('doneMsg').textContent=score+' de 20 questões com alternativas corretas. '+(score>=14?'✅ Acima de 70% — vai na prova.':'⚠️ Abaixo de 70% — repete até zerar.');
+  document.getElementById('done').classList.add('show');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function restart(){current=0;score=0;render();}
+render();
+</script>
+</body>
+</html>
