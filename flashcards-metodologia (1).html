@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flashcards — Metodología</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Nunito', sans-serif;
+  background: #f0f4ff;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 28px 16px 48px;
+  background-image: radial-gradient(circle at 20% 10%, #dbeafe 0%, transparent 50%),
+                    radial-gradient(circle at 80% 90%, #ede9fe 0%, transparent 50%);
+}
+
+header {
+  width: 100%;
+  max-width: 640px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.logo {
+  font-size: 15px;
+  font-weight: 900;
+  color: #4f46e5;
+  letter-spacing: -0.3px;
+}
+
+.badge {
+  background: #4f46e5;
+  color: white;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 5px 14px;
+  border-radius: 99px;
+}
+
+.progress-wrap {
+  width: 100%;
+  max-width: 640px;
+  margin-bottom: 24px;
+}
+
+.progress-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  font-weight: 700;
+  color: #6b7280;
+  margin-bottom: 8px;
+}
+
+.bar-bg {
+  width: 100%;
+  height: 8px;
+  background: #e0e7ff;
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #4f46e5, #7c3aed);
+  border-radius: 99px;
+  transition: width 0.5s cubic-bezier(.4,0,.2,1);
+}
+
+/* CARD */
+.card-wrap {
+  width: 100%;
+  max-width: 640px;
+  perspective: 1200px;
+  margin-bottom: 20px;
+}
+
+.card {
+  width: 100%;
+  background: white;
+  border-radius: 24px;
+  box-shadow: 0 8px 40px rgba(79,70,229,0.12), 0 2px 8px rgba(0,0,0,0.06);
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  position: relative;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 50px rgba(79,70,229,0.18), 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.card:active { transform: translateY(0px) scale(0.99); }
+
+.card-top {
+  padding: 32px 32px 24px;
+  border-left: 6px solid #4f46e5;
+}
+
+.card-label {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  color: #4f46e5;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+
+.card-question {
+  font-size: 17px;
+  font-weight: 700;
+  color: #1e1b4b;
+  line-height: 1.65;
+}
+
+.tap-zone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 16px 32px;
+  background: #f5f3ff;
+  color: #7c3aed;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  transition: background 0.2s;
+}
+
+.tap-zone:hover { background: #ede9fe; }
+
+.tap-icon {
+  font-size: 18px;
+  animation: bounce 1.8s ease-in-out infinite;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(4px); }
+}
+
+.answer-area {
+  display: none;
+  padding: 28px 32px;
+  background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+  border-top: 2px dashed #6ee7b7;
+  animation: slideDown 0.3s ease;
+}
+
+.answer-area.show { display: block; }
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.answer-label {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  color: #059669;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.answer-text {
+  font-size: 17px;
+  font-weight: 800;
+  color: #064e3b;
+  line-height: 1.65;
+  white-space: pre-line;
+}
+
+/* BUTTONS */
+.actions {
+  width: 100%;
+  max-width: 640px;
+  display: flex;
+  gap: 12px;
+}
+
+.btn {
+  flex: 1;
+  padding: 15px 20px;
+  border: none;
+  border-radius: 14px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.btn:hover { transform: translateY(-2px); }
+.btn:active { transform: translateY(0); }
+
+.btn-prev {
+  background: white;
+  color: #6b7280;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  flex: 0 0 auto;
+  padding: 15px 24px;
+}
+
+.btn-next {
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  color: white;
+  box-shadow: 0 4px 20px rgba(79,70,229,0.35);
+}
+
+/* DONE */
+.done {
+  width: 100%;
+  max-width: 640px;
+  background: white;
+  border-radius: 24px;
+  padding: 60px 40px;
+  text-align: center;
+  box-shadow: 0 8px 40px rgba(79,70,229,0.12);
+  display: none;
+}
+
+.done.show { display: block; animation: slideDown 0.4s ease; }
+
+.done-emoji { font-size: 72px; margin-bottom: 16px; }
+
+.done h2 {
+  font-size: 28px;
+  font-weight: 900;
+  color: #1e1b4b;
+  margin-bottom: 8px;
+}
+
+.done p { color: #6b7280; font-size: 15px; margin-bottom: 32px; }
+
+.btn-restart {
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  color: white;
+  box-shadow: 0 4px 20px rgba(79,70,229,0.35);
+  padding: 15px 40px;
+  border: none;
+  border-radius: 14px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+
+.btn-restart:hover { transform: translateY(-2px); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">📚 Metodología</div>
+  <div class="badge" id="badgeCount">1 / 58</div>
+</header>
+
+<div class="progress-wrap">
+  <div class="progress-row">
+    <span>Progresso</span>
+    <span id="pct">0%</span>
+  </div>
+  <div class="bar-bg"><div class="bar-fill" id="barFill" style="width:0%"></div></div>
+</div>
+
+<div class="card-wrap" id="cardWrap">
+  <div class="card" id="card" onclick="toggleAnswer()">
+    <div class="card-top">
+      <div class="card-label">📝 Pergunta</div>
+      <div class="card-question" id="question"></div>
+    </div>
+    <div class="tap-zone" id="tapZone">
+      <span class="tap-icon">👆</span> Toque para ver a resposta
+    </div>
+    <div class="answer-area" id="answerArea">
+      <div class="answer-label">✅ Resposta correta</div>
+      <div class="answer-text" id="answerText"></div>
+    </div>
+  </div>
+</div>
+
+<div class="actions" id="actions">
+  <button class="btn btn-prev" onclick="prevCard()">← Voltar</button>
+  <button class="btn btn-next" onclick="nextCard()">Próximo →</button>
+</div>
+
+<div class="done" id="done">
+  <div class="done-emoji">🎉</div>
+  <h2>Completou tudo!</h2>
+  <p>58 flashcards revisados.<br>Agora vai na prova e arrasa.</p>
+  <button class="btn-restart" onclick="restart()">↺ Recomeçar do início</button>
+</div>
+
+<script>
+const cards = [
+  { q: "La INTRODUCCIÓN de la monografía — o que ela contempla?", a: "E) Ninguna es correcta.\nA Introdução contextualiza o tema, o propósito, a justificativa e a estrutura da monografia." },
+  { q: "Contempla la contextualización temática del trabajo, el propósito del trabajo, la justificación e importancia de la investigación y la estructuración de la monografía.", a: "B) Introducción" },
+  { q: "Incluye todos aquellos documentos complementarios utilizados en el trabajo, cuya autoría pertenece a otros.", a: "A) Anexos" },
+  { q: "Es un conjunto de servicios que ofrece la universidad para la dirección y distribución de materiales digitales creados por la institución y sus miembros.", a: "A) Repositorio institucional" },
+  { q: "Son colecciones organizadas de información digital. Combinan la estructura de las bibliotecas y archivos con la representación digital que han hecho posible las computadoras.", a: "B) Biblioteca digital" },
+  { q: "Se da al presentar como propia la idea original de otra persona.", a: "D) Plagio" },
+  { q: "Al no citar o referenciar información proveniente de otra fuente se comete plagio, a menos que sea de conocimiento general.", a: "D) Plagio" },
+  { q: "Ocurre cuando simplemente se intercambian palabras de una oración o párrafo, o cuando se sigue el mismo estilo de la fuente original.", a: "A) Parafraseo inapropiado" },
+  { q: "Es uno de los actos más severos de plagio y se da al copiar sin autorización material perteneciente a otra persona.", a: "D) Plagio" },
+  { q: "Identifique conceptos centrales del texto. Busque términos similares sin cambios en el sentido. Compare con el texto base y reescriba. Son estrategias para elaborar un:", a: "C) Parafraseo / Paráfrasis" },
+  { q: "Tiene como eje central hablar frente a un público. Objetivo: transmitir un mensaje sobre un contenido disciplinar.", a: "C) Exposición" },
+  { q: "Certificación del saber, función de control y funciones pedagógicas. Son funciones de la:", a: "B) Evaluación de aprendizajes" },
+  { q: "Mantilla-Villarreal et al. (2010) sostienen que esta parte es una versión compacta y condensada del artículo.", a: "D) Resumen (Abstract)" },
+  { q: "Identificar la idea principal con lectura general y detenida. La idea secundaria complementa a la principal.", a: "B) Resumen\n(Também é pauta do Subrayado — mas a resposta da prova é Resumen)" },
+  { q: "Lectura completa. Subrayar ideas centrales. Ordenar de lo más sencillo a lo más complejo. Interpretar el texto integrando sus partes. Son pasos para la técnica del:", a: "E) Resumen" },
+  { q: "Género discursivo de la tipología textual argumentativa, escrita en prosa. El autor defiende una tesis para lograr la adhesión del auditorio.", a: "E) Ensayo" },
+  { q: "Son consideradas _______, donde reproduces exactamente las palabras del autor.", a: "E) Citas textuales" },
+  { q: "Son consideradas _______ cuando cuentas, en tus propias palabras, las ideas de otro autor.", a: "A) Citas parafraseadas" },
+  { q: "Existen dos formatos básicos para presentar las citas en el texto:", a: "E) B y C son correctas\n→ Cita narrativa (basada en el autor)\n→ Cita en paréntesis / parentética (basada en el texto)" },
+  { q: "El estilo APA separa las citas en dos grandes clases:", a: "D) Citas parafraseadas y Citas textuales" },
+  { q: "Es la principal forma de comunicación de la ciencia. Experimenta un proceso de revisión por pares que constatan su buena calidad.", a: "Revista Científica" },
+  { q: "Esta sección debe convencer al lector de la importancia del artículo y atraerlo a su lectura completa. Los organismos científicos la usan para clasificar el artículo.", a: "Resumen (Abstract)" },
+  { q: "Booth (2006) recomienda empezar la escritura del artículo con esta sección, porque es la más fácil — se tiene claro lo que se hizo, cómo se hizo y los resultados.", a: "Métodos" },
+  { q: "Debe atraer a lectores científicos. Se deben evitar palabras ambiguas, abreviaturas y expresiones como 'algunos aspectos de'.", a: "Título" },
+  { q: "Identificar la idea principal con lectura general y detenida. La idea principal puede estar al inicio, centro o final del párrafo. Son pautas para el:", a: "Subrayado" },
+  { q: "Esta técnica tiene por objeto resaltar, mediante trazos o colores, las palabras que contienen las ideas o conceptos fundamentales.", a: "Subrayado" },
+  { q: "Consiste en la reducción de un texto respetando su sentido y empleando las palabras del autor. Considerada una de las técnicas más sencillas, apropiada en las primeras etapas del estudio.", a: "Resumen" },
+  { q: "Incluir todo lo importante. Prescindir de explicaciones secundarias y ejemplos. Redactar en forma personal. Respetar las ideas del autor. Son condiciones para un:", a: "Resumen" },
+  { q: "Es el ejercicio de reconstruir un texto a partir de la comprensión que tenemos de él.", a: "Paráfrasis" },
+  { q: "Identifique conceptos centrales. Busque términos similares. Compare con el texto base y reescriba. Son estrategias para elaborar una:", a: "Paráfrasis" },
+  { q: "Permite sintetizar información extensa con enunciados sencillos. Amplía el vocabulario. Permite confrontar la comprensión del texto. Estos son beneficios de la:", a: "Paráfrasis" },
+  { q: "¿Qué tipos de citas existen en el formato APA?", a: "Citas parafraseadas y Citas textuales" },
+  { q: "Este tipo de cita es conocida como _______ porque al comienzo de la frase se agrega el nombre del autor.", a: "Cita narrativa" },
+  { q: "En esta parte se incluyen los datos del autor y de la institución a la cual pertenece, el título del trabajo y la fecha de presentación.", a: "Portada" },
+  { q: "Contempla la contextualización temática del trabajo, el propósito, la justificación e importancia y la estructuración de la monografía. (Q35)", a: "Introducción" },
+  { q: "Son la síntesis en la cual se incluyen todas las implicaciones que se derivan de la investigación, los aspectos a contemplar a futuro y las necesidades de estudio en el área. (Q36)", a: "Conclusión" },
+  { q: "Es un procedimiento científico, proceso sistemático de indagación, recolección, organización, análisis e interpretación de información o datos en torno a un tema.", a: "Investigación documental" },
+  { q: "Son colecciones organizadas de información digital. Combinan la estructura de bibliotecas y archivos con la representación digital. (Q38)", a: "Bibliotecas digitales" },
+  { q: "Son estructuras web interoperables que alojan recursos científicos, académicos y administrativos, tanto físicos como digitales, descritos por medio de metadatos.", a: "Repositorios digitales" },
+  { q: "Ocurre cuando se toman ideas o palabras escritas por otros sin reconocer de forma directa el haberlo hecho. (Q40)", a: "Plagio" },
+  { q: "Se da cuando un autor copia nuevamente un trabajo que ya había realizado anteriormente o usa las mismas ideas con distintas palabras para hacerlo parecer diferente.", a: "Auto-plagio" },
+  { q: "Ocurre cuando se manipulan los datos de una investigación para tratar de ocultar el plagio.", a: "Fabricación de datos" },
+  { q: "Principales razones que llevan a los estudiantes a cometer plagio: considera que la asignación es pérdida de tiempo; no tiene tiempo; presión de grupo; no poseen destrezas de investigación.", a: "E) Todas son correctas" },
+  { q: "Se da al poner una referencia en un párrafo u oración que no corresponde a la fuente original donde se obtuvo la información.", a: "Referencia falsa" },
+  { q: "El objetivo de la evaluación del aprendizaje, como actividad genérica, es:", a: "Valorar el aprendizaje en su proceso y resultados" },
+  { q: "Dentro de las funciones pretendidas o no de la evaluación están:", a: "Certificación, Control, Pedagógica y Controlar" },
+  { q: "En esta parte se incluyen los datos del autor y de la institución, el título del trabajo y la fecha de presentación. (Q47 — alternativas: Introducción, Monografía, Conclusión, Plagio, Ninguna es correcta)", a: "E) Ninguna es correcta\n(A resposta correta é Portada, que não estava nas alternativas)" },
+  { q: "Contempla la contextualización temática del trabajo; el propósito; la justificación e importancia; y la estructuración de la monografía. (Q48)", a: "A) Introducción" },
+  { q: "Son las síntesis en las que se incluyen las implicaciones que se derivan de la investigación, aspectos a contemplar a futuro y necesidades de estudio. (Q49)", a: "C) Conclusión" },
+  { q: "Es un procedimiento científico, proceso sistemático de indagación, recolección, organización, análisis e interpretación de información. (Q50)", a: "C) Investigación documental" },
+  { q: "Son colecciones organizadas de información digital. Combinan estructura de bibliotecas y archivos con representación digital. (Q51)", a: "A) Bibliotecas digitales" },
+  { q: "Son estructuras web interoperables que alojan recursos científicos, académicos y administrativos, descritos por metadatos. (Q52)", a: "B) Repositorios digitales" },
+  { q: "Ocurre cuando se toman ideas o palabras escritas por otros sin reconocer de forma directa el haberlo hecho. (Q53)", a: "A) Plagio" },
+  { q: "Ocurre cuando se manipulan los datos de una investigación para tratar de ocultar el plagio. (Q54)", a: "D) Fabricación de datos" },
+  { q: "Principales razones que llevan a los estudiantes a cometer plagio. (Q55)", a: "E) Todas son correctas" },
+  { q: "Se da al poner una referencia en un párrafo u oración que no corresponde a la fuente original. (Q56)", a: "E) Referencia falsa" },
+  { q: "El objetivo de la evaluación del aprendizaje como actividad genérica es: (Q57)", a: "Valorar el aprendizaje en su proceso y resultados" },
+  { q: "La función de la evaluación es: (Q58)", a: "Certificación, control, pedagógica y controlar" },
+];
+
+let current = 0;
+
+function render() {
+  const c = cards[current];
+  const pct = Math.round((current / cards.length) * 100);
+
+  document.getElementById('question').textContent = c.q;
+  document.getElementById('answerText').textContent = c.a;
+  document.getElementById('answerArea').classList.remove('show');
+  document.getElementById('tapZone').style.display = 'flex';
+  document.getElementById('badgeCount').textContent = `${current + 1} / ${cards.length}`;
+  document.getElementById('pct').textContent = pct + '%';
+  document.getElementById('barFill').style.width = pct + '%';
+  document.getElementById('done').classList.remove('show');
+  document.getElementById('cardWrap').style.display = 'block';
+  document.getElementById('actions').style.display = 'flex';
+}
+
+function toggleAnswer() {
+  const a = document.getElementById('answerArea');
+  const t = document.getElementById('tapZone');
+  if (a.classList.contains('show')) {
+    a.classList.remove('show');
+    t.style.display = 'flex';
+  } else {
+    a.classList.add('show');
+    t.style.display = 'none';
+  }
+}
+
+function nextCard() {
+  if (current < cards.length - 1) {
+    current++;
+    render();
+  } else {
+    document.getElementById('cardWrap').style.display = 'none';
+    document.getElementById('actions').style.display = 'none';
+    document.getElementById('done').classList.add('show');
+    document.getElementById('badgeCount').textContent = `${cards.length} / ${cards.length}`;
+    document.getElementById('pct').textContent = '100%';
+    document.getElementById('barFill').style.width = '100%';
+  }
+}
+
+function prevCard() {
+  if (current > 0) { current--; render(); }
+}
+
+function restart() { current = 0; render(); }
+
+render();
+</script>
+</body>
+</html>
